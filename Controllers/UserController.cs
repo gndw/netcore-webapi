@@ -28,12 +28,12 @@ namespace GWebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]User user)
+        public async Task<IActionResult> Login( [FromBody] Login login)
         {
             if (ModelState.IsValid)
             {
                 var selectedUser = await _context.Users
-                    .SingleOrDefaultAsync(u => u.Username == user.Username && u.Password == user.Password);
+                    .SingleOrDefaultAsync(u => u.Username == login.Username && u.Password == login.Password);
 
                 if (selectedUser != null)
                 {
