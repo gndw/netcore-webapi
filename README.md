@@ -1,3 +1,3 @@
-# Game Server and Admin Panel
+# Game Server
 
-Backend Service and Admin Panel created with Netcore
+Backend Service created with Netcore
