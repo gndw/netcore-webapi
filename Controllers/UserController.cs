@@ -4,22 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using GWebAPI.Data;
 using GWebAPI.Models;
+using GWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace GWebAPI.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("api/{controller}")]
-    public class AuthController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IGwebTokenService _tokenService;
 
-        public AuthController(ApplicationDbContext context)
+        public UserController(ApplicationDbContext context, IGwebTokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
         }
 
         [AllowAnonymous]
@@ -33,7 +37,11 @@ namespace GWebAPI.Controllers
 
                 if (selectedUser != null)
                 {
-                    return Ok(selectedUser);
+                    Token tk = _tokenService.GenerateToken(selectedUser.ID.ToString(), DateTime.UtcNow.AddMinutes(3));
+                    return Ok(new {
+                        token = tk.StringToken,
+                        expires = tk.Expires
+                    });
                 }
                 else return NotFound();
                 
