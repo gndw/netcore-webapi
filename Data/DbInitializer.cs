@@ -5,7 +5,7 @@ namespace GWebAPI.Data
 {
     public static class DbInitializer
     {
-        public static void Initialize(InitializeContext context)
+        public static void Initialize(ApplicationDbContext context)
         {
             context.Database.EnsureCreated();
 
@@ -16,7 +16,7 @@ namespace GWebAPI.Data
 
             var users = new User[]
             {
-                new User () {Username="gndw",Email="ganda@mail.com",Password="123456"}
+                new User () {Username="gndw",Email="ganda@mail.com",Password="123"}
             };
 
             foreach (var user in users)

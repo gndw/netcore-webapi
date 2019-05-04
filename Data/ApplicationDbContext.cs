@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GWebAPI.Data
 {
-    public class InitializeContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
-        public InitializeContext (DbContextOptions<InitializeContext> options) : base(options) {}
+        public ApplicationDbContext (DbContextOptions<ApplicationDbContext> options) : base(options) {}
 
         public DbSet<User> Users { get; set; }
         public DbSet<Leaderboard> Leaderboards { get; set; }

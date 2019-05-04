@@ -4,24 +4,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using GWebAPI.Data;
 using GWebAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GWebAPI.Controllers
 {
+    [Authorize]
+    [ApiController]
+    [Route("api/{controller}")]
     public class LeaderboardController : ControllerBase
     {
-        private readonly LeaderboardContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public LeaderboardController(LeaderboardContext context)
+        public LeaderboardController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // [HttpGet]
-        public async Task<ActionResult<IEnumerable<Leaderboard>>> Index()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Leaderboard>>> Get()
         {
-            if (_context.Leaderboards == null) return BadRequest();
             return await _context.Leaderboards.ToListAsync();
         }
 

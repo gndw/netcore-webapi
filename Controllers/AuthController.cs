@@ -4,18 +4,41 @@ using System.Linq;
 using System.Threading.Tasks;
 using GWebAPI.Data;
 using GWebAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GWebAPI.Controllers
 {
+    [Authorize]
+    [ApiController]
+    [Route("api/{controller}")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public AuthController(AuthContext context)
+        public AuthController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody]User user)
+        {
+            if (ModelState.IsValid)
+            {
+                var selectedUser = await _context.Users
+                    .SingleOrDefaultAsync(u => u.Username == user.Username && u.Password == user.Password);
+
+                if (selectedUser != null)
+                {
+                    return Ok(selectedUser);
+                }
+                else return NotFound();
+                
+            }   
+            return BadRequest(ModelState);
         }
 
         // [HttpGet]

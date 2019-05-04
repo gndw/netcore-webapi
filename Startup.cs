@@ -22,9 +22,7 @@ namespace GWebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<InitializeContext>(options => options.UseMySql(Configuration.GetConnectionString("DatabaseConnection")));
-            services.AddDbContext<AuthContext>(options => options.UseMySql(Configuration.GetConnectionString("DatabaseConnection")));
-            services.AddDbContext<LeaderboardContext>(options => options.UseMySql(Configuration.GetConnectionString("DatabaseConnection")));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DatabaseConnection")));            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -42,12 +40,7 @@ namespace GWebAPI
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc(routes => {
-                routes.MapRoute(
-                    name: "api",
-                    template: "api/{controller}/{action}/{id?}"
-                    );
-            });
+            app.UseMvc();
 
             if (env.IsDevelopment())
             {

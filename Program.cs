@@ -23,7 +23,7 @@ namespace GWebAPI
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<InitializeContext>();
+                    var context = services.GetRequiredService<ApplicationDbContext>();
                     DbInitializer.Initialize(context);
                 }
                 catch (Exception ex)
