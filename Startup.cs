@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GWebAPI.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Http;
 
 namespace GWebAPI
 {
@@ -25,6 +22,9 @@ namespace GWebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<InitializeContext>(options => options.UseMySql(Configuration.GetConnectionString("DatabaseConnection")));
+            services.AddDbContext<AuthContext>(options => options.UseMySql(Configuration.GetConnectionString("DatabaseConnection")));
+            services.AddDbContext<LeaderboardContext>(options => options.UseMySql(Configuration.GetConnectionString("DatabaseConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -42,7 +42,20 @@ namespace GWebAPI
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseMvc(routes => {
+                routes.MapRoute(
+                    name: "api",
+                    template: "api/{controller}/{action}/{id?}"
+                    );
+            });
+
+            if (env.IsDevelopment())
+            {
+                app.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync("I dont find the routes!");
+                });
+            }
         }
     }
 }
