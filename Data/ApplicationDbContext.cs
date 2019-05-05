@@ -12,8 +12,20 @@ namespace GWebAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().ToTable("User");
-            modelBuilder.Entity<Leaderboard>().ToTable("Leaderboard");
+            modelBuilder.Entity<User>().HasKey(x => x.ID);
+            modelBuilder.Entity<User>()
+                .Property(x => x.Username)
+                .IsRequired();
+            modelBuilder.Entity<User>()
+                .Property(x => x.Email)
+                .IsRequired();
+            modelBuilder.Entity<User>()
+                .Property(x => x.Password)
+                .IsRequired();
+
+            
+            modelBuilder.Entity<Leaderboard>().HasKey(x => x.ID);
+                
         }
     }
 }
