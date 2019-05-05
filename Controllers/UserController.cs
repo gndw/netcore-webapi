@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GWebAPI.Data;
 using GWebAPI.Models;
 using GWebAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +39,7 @@ namespace GWebAPI.Controllers
 
                 if (selectedUser != null)
                 {
-                    Token tk = _tokenService.GenerateToken(selectedUser.ID.ToString(), DateTime.UtcNow.AddMinutes(3));
+                    Token tk = _tokenService.GenerateToken(selectedUser.Username.ToString(), DateTime.UtcNow.AddMinutes(3));
                     return Ok(new {
                         token = tk.StringToken,
                         expires = tk.Expires
@@ -47,6 +49,20 @@ namespace GWebAPI.Controllers
                 
             }   
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("readtoken")]
+        public ActionResult<IEnumerable<string>> ReadToken ()
+        {
+            try
+            {
+                var claim = User.Claims.First(c => c.Type == ClaimTypes.Name);
+                return Ok(claim.Type + " :: " + claim.Value);   
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         // [HttpGet]
