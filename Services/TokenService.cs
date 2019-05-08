@@ -11,8 +11,8 @@ namespace GWebAPI.Services
 {
     public interface IGwebTokenService
     {
-        Token GenerateToken (string claimName, DateTime expires);
-        Token GenerateToken (string claimName);
+        Token GenerateToken (Claim[] claims, DateTime expires);
+        Token GenerateToken (Claim[] claims);
     }
 
     public class GwebTokenService : IGwebTokenService
@@ -24,16 +24,16 @@ namespace GWebAPI.Services
             _appSettings = appSettings.Value;
         }
 
-        public Token GenerateToken (string claimName, DateTime expires)
+        /// <summary>
+        /// Generate JWT Token
+        /// </summary>
+        public Token GenerateToken (Claim[] claims, DateTime expires)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[] 
-                {
-                    new Claim(ClaimTypes.Name, claimName)
-                }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -41,9 +41,12 @@ namespace GWebAPI.Services
             return new Token(token);
         }
 
-        public Token GenerateToken (string claimName)
+        /// <summary>
+        /// Generate JWT Token, expires in 7 days
+        /// </summary>
+        public Token GenerateToken (Claim[] claims)
         {
-            return GenerateToken(claimName, DateTime.UtcNow.AddDays(7));
+            return GenerateToken(claims, DateTime.UtcNow.AddDays(7));
         }
     }
 }

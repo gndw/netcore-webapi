@@ -39,7 +39,7 @@ namespace GWebAPI.Controllers
 
                 if (selectedUser != null)
                 {
-                    Token tk = _tokenService.GenerateToken(selectedUser.Username.ToString(), DateTime.UtcNow.AddMinutes(3));
+                    Token tk = _tokenService.GenerateToken(null, DateTime.UtcNow.AddMinutes(3));
                     return Ok(new {
                         token = tk.StringToken,
                         expires = tk.Expires
