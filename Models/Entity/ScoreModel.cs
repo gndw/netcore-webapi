@@ -3,16 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GWebAPI.Models
 {
+    [Table("tbl_score")]
     public class ScoreModel : BaseEntityModel
     {
         [Required(ErrorMessage = "Please input Score Value")]
         [Column("value")]
-        public long Value { get; set; }
+        public int Value { get; set; }
 
         [Required(ErrorMessage = "Please input UserID")]
-        [Display(Name = "User ID")]
         [Column("user_id")]
-        public int UserID { get; set; }
+        [ForeignKey("UserModel")]
+        public long UserID { get; set; }
 
         [ForeignKey("UserID")]
         public UserModel User { get; set; }

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GWebAPI.Models
@@ -11,6 +12,7 @@ namespace GWebAPI.Models
         /// <summary>
         /// Entity Framework Identification
         /// </summary>
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id", TypeName = "bigint(20)")]
         public long ID { get; set; }
