@@ -16,6 +16,7 @@ namespace GWebAPI.Controllers
 {
     [Authorize]
     [ApiController]
+    [ApiVersion("1.0")]
     [Route("api/{controller}")]
     public class UserController : ControllerBase
     {
