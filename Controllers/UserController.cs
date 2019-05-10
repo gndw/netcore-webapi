@@ -30,7 +30,7 @@ namespace GWebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login( [FromBody] Login login)
+        public async Task<IActionResult> Login( [FromBody] LoginModel login)
         {
             if (ModelState.IsValid)
             {

@@ -2,7 +2,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 
-namespace GWebAPI.Models
+namespace GWebAPI.Services
 {
     public class Token
     {

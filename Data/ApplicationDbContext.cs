@@ -7,12 +7,12 @@ namespace GWebAPI.Data
     {
         public ApplicationDbContext (DbContextOptions<ApplicationDbContext> options) : base(options) {}
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Score> Scores { get; set; }
+        public DbSet<UserModel> Users { get; set; }
+        public DbSet<ScoreModel> Scores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            
         }
 
     }

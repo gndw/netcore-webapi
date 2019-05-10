@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GWebAPI.Models
 {
-    public class Login
+    public class LoginModel
     {
         [Required(ErrorMessage="Username is Required")]
         public string Username { get; set; }

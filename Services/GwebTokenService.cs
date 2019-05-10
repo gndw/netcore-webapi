@@ -9,12 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace GWebAPI.Services
 {
-    public interface IGwebTokenService
-    {
-        Token GenerateToken (Claim[] claims, DateTime expires);
-        Token GenerateToken (Claim[] claims);
-    }
-
     public class GwebTokenService : IGwebTokenService
     {
         private readonly AppSettings _appSettings;

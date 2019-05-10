@@ -23,7 +23,7 @@ namespace GWebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Score>>> Get()
+        public async Task<ActionResult<IEnumerable<ScoreModel>>> Get()
         {
             return await _context.Scores.ToListAsync();
         }

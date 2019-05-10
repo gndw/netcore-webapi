@@ -14,9 +14,9 @@ namespace GWebAPI.Data
                 return;
             }
 
-            var users = new User[]
+            var users = new UserModel[]
             {
-                new User () {Username="gndw",Email="ganda@mail.com",Password="123"}
+                new UserModel () {Username="gndw",Email="ganda@mail.com",Password="123"}
             };
 
             foreach (var user in users)
