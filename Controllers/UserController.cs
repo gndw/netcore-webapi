@@ -17,11 +17,11 @@ namespace GWebAPI.Controllers
     [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/{controller}")]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IGwebTokenService _tokenService;
+        protected readonly ApplicationDbContext _context;
+        protected readonly IGwebTokenService _tokenService;
 
         public UserController(ApplicationDbContext context, IGwebTokenService tokenService)
         {
@@ -31,7 +31,7 @@ namespace GWebAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login( [FromBody] LoginModel login)
+        public virtual async Task<IActionResult> Login( [FromBody] LoginModel login)
         {
             if (ModelState.IsValid)
             {
