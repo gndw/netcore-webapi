@@ -39,7 +39,8 @@ namespace GWebAPI.Controllers
         [HttpPost("login")]
         public virtual async Task<IActionResult> Login( [FromBody] LoginModel login)
         {
-            if (ModelState.IsValid)
+            ValidationModel requestValidation = login.Validate();
+            if (requestValidation.IsValid)
             {
                 var selectedUser = await _context.Users
                     .SingleOrDefaultAsync(u => u.Username == login.Username && u.Password == login.Password);
@@ -52,10 +53,15 @@ namespace GWebAPI.Controllers
                         expires = tk.Expires
                     });
                 }
-                else return NotFound();
+                else return NotFound(new {
+                    bro = "sdf"
+                });
                 
-            }   
-            return BadRequest(ModelState);
+            }
+            else
+            {
+                return BadRequest(ErrorBuilder.Create(requestValidation));
+            }
         }
 
         [HttpGet("readtoken")]

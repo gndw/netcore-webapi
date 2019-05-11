@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GWebAPI.Models
 {
     [Table("tbl_score")]
-    public class ScoreModel : BaseEntityModel
+    public class ScoreModel : EntityModel
     {
         [Required(ErrorMessage = "Please input Score Value")]
         [Column("value")]
