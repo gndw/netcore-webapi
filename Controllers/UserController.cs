@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace GWebAPI.Controllers
@@ -22,11 +23,16 @@ namespace GWebAPI.Controllers
     {
         protected readonly ApplicationDbContext _context;
         protected readonly IGwebTokenService _tokenService;
+        protected readonly ILogger _logger;
 
-        public UserController(ApplicationDbContext context, IGwebTokenService tokenService)
+        public UserController(
+            ApplicationDbContext context,
+            IGwebTokenService tokenService,
+            ILogger<UserController> logger)
         {
             _context = context;
             _tokenService = tokenService;
+            _logger = logger;
         }
 
         [AllowAnonymous]
@@ -40,7 +46,7 @@ namespace GWebAPI.Controllers
 
                 if (selectedUser != null)
                 {
-                    Token tk = _tokenService.GenerateToken(null, DateTime.UtcNow.AddMinutes(3));
+                    Token tk = _tokenService.GenerateToken(null, DateTime.UtcNow.AddMinutes(3));                    
                     return Ok(new {
                         token = tk.StringToken,
                         expires = tk.Expires

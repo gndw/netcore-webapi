@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace GWebAPI.Controllers
@@ -20,7 +21,12 @@ namespace GWebAPI.Controllers
     [Route("api/user")]
     public class UserV2Controller : UserController
     {
-        public UserV2Controller(ApplicationDbContext context, IGwebTokenService tokenService) : base(context, tokenService) {}
+        public UserV2Controller(
+            ApplicationDbContext context,
+            IGwebTokenService tokenService,
+            ILogger<UserV2Controller> logger
+            )
+        : base(context, tokenService, logger) {}
 
         [AllowAnonymous]
         [HttpPost("login")]

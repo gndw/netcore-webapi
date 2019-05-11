@@ -12,7 +12,7 @@ namespace GWebAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/leaderboard")]
     public class LeaderboardController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
