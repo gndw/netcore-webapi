@@ -47,16 +47,46 @@ namespace GWebAPI.Controllers
 
                 if (selectedUser != null)
                 {
-                    Token tk = _tokenService.GenerateToken(null, DateTime.UtcNow.AddMinutes(3));                    
+                    Token tk = _tokenService.GenerateToken(null, DateTime.UtcNow.AddHours(10));                    
                     return Ok(new {
                         token = tk.StringToken,
                         expires = tk.Expires
                     });
                 }
-                else return NotFound(new {
-                    bro = "sdf"
-                });
+                else return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword, "Invalid Username or Password"));
                 
+            }
+            else
+            {
+                return BadRequest(ErrorBuilder.Create(requestValidation));
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public virtual async Task<IActionResult> Register( [FromBody] RegisterModel register)
+        {
+            ValidationModel requestValidation = register.Validate();
+            if (requestValidation.IsValid)
+            {
+                UserModel newUser = new UserModel()
+                {
+                    Username = register.Username,
+                    Email = register.Email,
+                    Password = register.Password
+                };
+                _context.Users.Add(newUser);
+
+                try
+                { 
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception)
+                {
+                    return BadRequest(ErrorBuilder.Create(ErrorCode.RequestInternalError,"Contact your Administrator"));
+                }
+
+                return Ok();
             }
             else
             {

@@ -7,12 +7,10 @@ namespace GWebAPI.Models
     public class UserModel : EntityModel
     {
         [Required]
-        [MinLength(1)]
         [Column("username", TypeName = "varchar(50)")]
         public string Username { get; set; }
 
         [Required]
-        [RegularExpression(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$", ErrorMessage = "Email is not valid.")]
         [Column("email", TypeName = "varchar(50)")]
         public string Email { get; set; }
 

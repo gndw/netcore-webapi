@@ -13,7 +13,17 @@ namespace GWebAPI.Models
 
         private static Dictionary<string,string> _context = new Dictionary<string,string>()
         {
-            { ErrorCode.RequestFieldUnspecified, "2001" }
+            // Request
+            { ErrorCode.RequestFieldUnspecified, "2001" },
+            { ErrorCode.InvalidRequestValue, "2002" },
+            { ErrorCode.RequestInternalError, "2003" },
+            { ErrorCode.InvalidEmailFormat, "2004" },
+            
+            // Login Register Logout
+            { ErrorCode.InvalidUsernameOrPassword, "3001" },
+            { ErrorCode.UsernameAlreadyTaken, "3002" },
+            { ErrorCode.EmailAlreadyTaken, "3003" }
+            
         };
     }
 }
