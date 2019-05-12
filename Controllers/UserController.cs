@@ -23,15 +23,18 @@ namespace GWebAPI.Controllers
     {
         protected readonly ApplicationDbContext _context;
         protected readonly IGwebTokenService _tokenService;
+        protected readonly IGWebPasswordHashService _passwordService;
         protected readonly ILogger _logger;
 
         public UserController(
             ApplicationDbContext context,
             IGwebTokenService tokenService,
+            IGWebPasswordHashService passwordService,
             ILogger<UserController> logger)
         {
             _context = context;
             _tokenService = tokenService;
+            _passwordService = passwordService;
             _logger = logger;
         }
 
@@ -43,11 +46,15 @@ namespace GWebAPI.Controllers
             if (requestValidation.IsValid)
             {
                 var selectedUser = await _context.Users
-                    .SingleOrDefaultAsync(u => u.Username.Equals(login.Username) && u.Password.Equals(login.Password));
+                    .SingleOrDefaultAsync(u => u.Username.Equals(login.Username));
+                
+                if (selectedUser == null) {
+                    return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword));
+                }
 
-                if (selectedUser != null)
+                if (_passwordService.Hash(login.Password, selectedUser.Salt).Equals(selectedUser.Password))
                 {
-                    Token tk = _tokenService.GenerateToken(null, DateTime.UtcNow.AddHours(10));                    
+                    Token tk = _tokenService.GenerateToken(null, DateTime.UtcNow.AddHours(10));
                     return Ok(new {
                         token = tk.StringToken,
                         expires = tk.Expires
@@ -80,11 +87,14 @@ namespace GWebAPI.Controllers
                         return BadRequest(ErrorBuilder.Create(ErrorCode.EmailAlreadyUsed));
                 }
 
+                PasswordHash ph = _passwordService.Generate(register.Password);
+
                 UserModel newUser = new UserModel()
                 {
                     Username = register.Username,
                     Email = register.Email,
-                    Password = register.Password
+                    Password = ph.Password,
+                    Salt = ph.Salt
                 };
 
                 _context.Users.Add(newUser);

@@ -24,9 +24,10 @@ namespace GWebAPI.Controllers
         public UserV2Controller(
             ApplicationDbContext context,
             IGwebTokenService tokenService,
+            IGWebPasswordHashService passwordService,
             ILogger<UserV2Controller> logger
             )
-        : base(context, tokenService, logger) {}
+        : base(context, tokenService, passwordService, logger) {}
 
     }
 }

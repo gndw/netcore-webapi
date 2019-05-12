@@ -1,5 +1,6 @@
 using System.Linq;
 using GWebAPI.Models;
+using GWebAPI.Services;
 
 namespace GWebAPI.Data
 {
@@ -14,9 +15,15 @@ namespace GWebAPI.Data
                 return;
             }
 
+            GwebPasswordHashService phs = new GwebPasswordHashService();
+            PasswordHash ph = phs.Generate("123");
             var users = new UserModel[]
             {
-                new UserModel () {Username="gndw",Email="ganda@mail.com",Password="123"}
+                new UserModel () {
+                    Username="gndw",
+                    Email="ganda@mail.com",
+                    Password=ph.Password,
+                    Salt=ph.Salt}
             };
 
             foreach (var user in users)

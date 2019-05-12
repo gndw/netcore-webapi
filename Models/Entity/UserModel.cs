@@ -17,5 +17,9 @@ namespace GWebAPI.Models
         [Required]
         [Column("password", TypeName = "varchar(50)")]
         public string Password { get; set; }
+
+        [Required]
+        [Column("salt", TypeName = "varchar(50)")]
+        public string Salt { get; set; }
     }
 }

@@ -68,6 +68,7 @@ namespace GWebAPI
             });
 
             services.AddScoped<IGwebTokenService, GwebTokenService>();
+            services.AddScoped<IGWebPasswordHashService, GwebPasswordHashService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
