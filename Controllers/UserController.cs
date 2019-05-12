@@ -54,7 +54,10 @@ namespace GWebAPI.Controllers
 
                 if (_passwordService.Hash(login.Password, selectedUser.Salt).Equals(selectedUser.Password))
                 {
-                    Token tk = _tokenService.GenerateToken(null, DateTime.UtcNow.AddHours(10));
+                    Token tk = _tokenService.GenerateToken(
+                        new Claim[] { new Claim("id",selectedUser.ID.ToString()) },
+                        DateTime.UtcNow.AddHours(10));
+                    
                     return Ok(new {
                         token = tk.StringToken,
                         expires = tk.Expires
@@ -125,8 +128,7 @@ namespace GWebAPI.Controllers
         {
             try
             {
-                var claim = User.Claims.First(c => c.Type == ClaimTypes.Name);
-                return Ok(claim.Type + " :: " + claim.Value);   
+                return Ok(User.Claims.Select(c => c.Type + " : " + c.Value));   
             }
             catch
             {
