@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace GWebAPI.Models
 {
     public class ErrorBuilder
@@ -11,6 +13,11 @@ namespace GWebAPI.Models
                     servercode = ErrorCodeContext.GetServerCode(code)
                 }
             };
+        }
+
+        public static object Create (string code)
+        {
+            return Create(code, Regex.Replace(code, "([A-Z])", " $1", RegexOptions.Compiled).Trim());
         }
 
         public static object Create (IErrorSource errorsource)

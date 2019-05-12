@@ -53,7 +53,7 @@ namespace GWebAPI.Controllers
                         expires = tk.Expires
                     });
                 }
-                else return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword, "Invalid Username or Password"));
+                else return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword));
                 
             }
             else
@@ -69,6 +69,11 @@ namespace GWebAPI.Controllers
             ValidationModel requestValidation = register.Validate();
             if (requestValidation.IsValid)
             {
+                var userWithSameUsername = await _context.Users.SingleOrDefaultAsync(u => u.Username == register.Username);
+                if (userWithSameUsername != null) {
+                    return BadRequest(ErrorBuilder.Create(ErrorCode.UsernameAlreadyTaken));
+                }
+
                 UserModel newUser = new UserModel()
                 {
                     Username = register.Username,
