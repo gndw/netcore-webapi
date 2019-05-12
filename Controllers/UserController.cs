@@ -43,7 +43,7 @@ namespace GWebAPI.Controllers
             if (requestValidation.IsValid)
             {
                 var selectedUser = await _context.Users
-                    .SingleOrDefaultAsync(u => u.Username == login.Username && u.Password == login.Password);
+                    .SingleOrDefaultAsync(u => u.Username.Equals(login.Username) && u.Password.Equals(login.Password));
 
                 if (selectedUser != null)
                 {
@@ -69,9 +69,15 @@ namespace GWebAPI.Controllers
             ValidationModel requestValidation = register.Validate();
             if (requestValidation.IsValid)
             {
-                var userWithSameUsername = await _context.Users.SingleOrDefaultAsync(u => u.Username == register.Username);
-                if (userWithSameUsername != null) {
-                    return BadRequest(ErrorBuilder.Create(ErrorCode.UsernameAlreadyTaken));
+                var userWithSameUsernameOrEmail = await _context.Users
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(u => u.Username.Equals(register.Username) || u.Email.Equals(register.Email));
+
+                if (userWithSameUsernameOrEmail != null) {
+                    if (userWithSameUsernameOrEmail.Username.Equals(register.Username))
+                        return BadRequest(ErrorBuilder.Create(ErrorCode.UsernameAlreadyTaken));
+                    else if (userWithSameUsernameOrEmail.Email.Equals(register.Email))
+                        return BadRequest(ErrorBuilder.Create(ErrorCode.EmailAlreadyUsed));
                 }
 
                 UserModel newUser = new UserModel()
@@ -80,6 +86,7 @@ namespace GWebAPI.Controllers
                     Email = register.Email,
                     Password = register.Password
                 };
+
                 _context.Users.Add(newUser);
 
                 try
@@ -91,7 +98,11 @@ namespace GWebAPI.Controllers
                     return BadRequest(ErrorBuilder.Create(ErrorCode.RequestInternalError,"Contact your Administrator"));
                 }
 
-                return Ok();
+                return Ok (new {
+                    id = newUser.ID,
+                    username = newUser.Username,
+                    email = newUser.Email
+                });
             }
             else
             {
@@ -112,45 +123,6 @@ namespace GWebAPI.Controllers
                 return NotFound();
             }
         }
-
-        // [HttpGet]
-        // public async Task<ActionResult<IEnumerable<User>>> Users()
-        // {
-        //     return await _context.Users.ToListAsync();
-        // }
-
-        // [HttpGet]
-        // public async Task<ActionResult<User>> Users(string id)
-        // {
-        //     var user = await _context.Users
-        //         .AsNoTracking()
-        //         .FirstOrDefaultAsync(u => u.Username == id);
-            
-        //     if (user == null) return NotFound();
-        //     else return user; 
-        // }
-
-        // [HttpPost]
-        // public async Task<ActionResult> Post( [Bind("Username,Email,Password")] User user)
-        // {
-        //     try
-        //     {
-        //         if (ModelState.IsValid)
-        //         {
-        //             _context.Add(user);
-        //             await _context.SaveChangesAsync();
-        //             return RedirectToAction(nameof(Users));
-        //         }
-        //     }
-        //     catch (DbUpdateException)
-        //     {
-        //         ModelState.AddModelError("", "Unable to save changes. " +
-        //             "Try again, and if the problem persists " +
-        //             "see your system administrator.");
-        //     }
-
-        //     return BadRequest(ModelState);
-        // }
 
     }
 }

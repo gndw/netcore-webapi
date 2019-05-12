@@ -22,7 +22,7 @@ namespace GWebAPI.Models
             // Login Register Logout
             { ErrorCode.InvalidUsernameOrPassword, "3001" },
             { ErrorCode.UsernameAlreadyTaken, "3002" },
-            { ErrorCode.EmailAlreadyTaken, "3003" }
+            { ErrorCode.EmailAlreadyUsed, "3003" }
             
         };
     }

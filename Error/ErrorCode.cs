@@ -11,6 +11,6 @@ namespace GWebAPI.Models
         // Login Register Logout
         public const string InvalidUsernameOrPassword = nameof( InvalidUsernameOrPassword );
         public const string UsernameAlreadyTaken = nameof( UsernameAlreadyTaken );
-        public const string EmailAlreadyTaken = nameof( EmailAlreadyTaken );
+        public const string EmailAlreadyUsed = nameof( EmailAlreadyUsed );
     }
 }
