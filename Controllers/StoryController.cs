@@ -12,20 +12,20 @@ namespace GWebAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/leaderboard")]
-    public class LeaderboardController : ControllerBase
+    [Route("api/story")]
+    public class StoryController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public LeaderboardController(ApplicationDbContext context)
+        public StoryController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ScoreModel>>> Get()
+        public async Task<ActionResult<IEnumerable<StoryModel>>> Get()
         {
-            return await _context.Scores.ToListAsync();
+            return await _context.Stories.ToListAsync();
         }
 
     }

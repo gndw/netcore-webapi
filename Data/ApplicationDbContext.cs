@@ -8,7 +8,9 @@ namespace GWebAPI.Data
         public ApplicationDbContext (DbContextOptions<ApplicationDbContext> options) : base(options) {}
 
         public DbSet<UserModel> Users { get; set; }
-        public DbSet<ScoreModel> Scores { get; set; }
+        public DbSet<StoryModel> Stories { get; set; }
+        public DbSet<LikeStoryModel> StoryLikes { get; set; }
+        public DbSet<DislikeStoryModel> StoryDislikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
