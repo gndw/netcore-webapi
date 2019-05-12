@@ -4,6 +4,5 @@ namespace GWebAPI.Models
     {
         string Code {get; set;}
         string Message {get; set;}
-        InnerError InnerError { get; set; }
     }
 }
