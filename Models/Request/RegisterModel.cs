@@ -2,7 +2,7 @@ using GWebAPI.Helpers;
 
 namespace GWebAPI.Models
 {
-    public class RegisterModel : BaseModel
+    public class RegisterModel : RequestModel
     {
         [Required]
         [Length(4,50)]

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GWebAPI.Data;
+using GWebAPI.Error;
 using GWebAPI.Models;
 using GWebAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,20 +43,19 @@ namespace GWebAPI.Controllers
         [HttpPost("login")]
         public virtual async Task<IActionResult> Login( [FromBody] LoginModel login)
         {
-            ValidationModel requestValidation = login.Validate();
-            if (!requestValidation.IsValid) {
-                return BadRequest(ErrorBuilder.Create(requestValidation));
+            if (!login.IsValidRequest()) {
+                return BadRequest(new ErrorResponse(login.Error()));
             }
 
             var selectedUser = await _context.Users
                 .SingleOrDefaultAsync(u => u.Username.Equals(login.Username));
             if (selectedUser == null) {
-                return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword));
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidUsernameOrPassword));
             }
 
             string hashedPassword = _passwordService.Hash(login.Password, selectedUser.Salt);
             if (!hashedPassword.Equals(selectedUser.Password)) {
-                return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword));
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidUsernameOrPassword));
             }
                 
             Token tk = _tokenService.GenerateToken(
@@ -72,9 +72,8 @@ namespace GWebAPI.Controllers
         [HttpPost("register")]
         public virtual async Task<IActionResult> Register( [FromBody] RegisterModel register)
         {
-            ValidationModel requestValidation = register.Validate();
-            if (!requestValidation.IsValid) {
-                return BadRequest(ErrorBuilder.Create(requestValidation));
+            if (!register.IsValidRequest()) {
+                return BadRequest(new ErrorResponse(register.Error()));
             }
             
             var userWithSameUsernameOrEmail = await _context.Users
@@ -83,33 +82,28 @@ namespace GWebAPI.Controllers
 
             if (userWithSameUsernameOrEmail != null) {
                 if (userWithSameUsernameOrEmail.Username.Equals(register.Username))
-                    return BadRequest(ErrorBuilder.Create(ErrorCode.UsernameAlreadyTaken));
+                    return BadRequest(new ErrorResponse(ErrorCode.UsernameAlreadyTaken));
                 else if (userWithSameUsernameOrEmail.Email.Equals(register.Email))
-                    return BadRequest(ErrorBuilder.Create(ErrorCode.EmailAlreadyUsed));
+                    return BadRequest(new ErrorResponse(ErrorCode.EmailAlreadyUsed));
             }
 
             PasswordHash ph = _passwordService.Generate(register.Password);
-            UserModel newUser = new UserModel()
+            _context.Users.Add(new UserModel()
             {
                 Username = register.Username,
                 Email = register.Email,
                 Password = ph.Password,
                 Salt = ph.Salt
-            };
-            _context.Users.Add(newUser);
+            });
 
             try { 
                 await _context.SaveChangesAsync();
             }
             catch (Exception) {
-                return BadRequest(ErrorBuilder.Create(ErrorCode.RequestInternalError,"Contact your Administrator"));
+                return BadRequest(new ErrorResponse(ErrorCode.RequestInternalErrorModel));
             }
 
-            return Ok (new {
-                id = newUser.ID,
-                username = newUser.Username,
-                email = newUser.Email
-            });
+            return Ok ();
         }
 
         [HttpGet("readtoken")]

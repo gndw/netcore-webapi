@@ -1,8 +1,7 @@
-namespace GWebAPI.Models
+namespace GWebAPI.Error
 {
     public interface IErrorSource
     {
-        string Code {get; set;}
-        string Message {get; set;}
+        ErrorModel Error {get; set;}
     }
 }
