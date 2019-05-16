@@ -43,33 +43,29 @@ namespace GWebAPI.Controllers
         public virtual async Task<IActionResult> Login( [FromBody] LoginModel login)
         {
             ValidationModel requestValidation = login.Validate();
-            if (requestValidation.IsValid)
-            {
-                var selectedUser = await _context.Users
-                    .SingleOrDefaultAsync(u => u.Username.Equals(login.Username));
-                
-                if (selectedUser == null) {
-                    return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword));
-                }
-
-                if (_passwordService.Hash(login.Password, selectedUser.Salt).Equals(selectedUser.Password))
-                {
-                    Token tk = _tokenService.GenerateToken(
-                        new Claim[] { new Claim("id",selectedUser.ID.ToString()) },
-                        DateTime.UtcNow.AddHours(10));
-                    
-                    return Ok(new {
-                        token = tk.StringToken,
-                        expires = tk.Expires
-                    });
-                }
-                else return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword));
-                
-            }
-            else
-            {
+            if (!requestValidation.IsValid) {
                 return BadRequest(ErrorBuilder.Create(requestValidation));
             }
+
+            var selectedUser = await _context.Users
+                .SingleOrDefaultAsync(u => u.Username.Equals(login.Username));
+            if (selectedUser == null) {
+                return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword));
+            }
+
+            string hashedPassword = _passwordService.Hash(login.Password, selectedUser.Salt);
+            if (!hashedPassword.Equals(selectedUser.Password)) {
+                return NotFound(ErrorBuilder.Create(ErrorCode.InvalidUsernameOrPassword));
+            }
+                
+            Token tk = _tokenService.GenerateToken(
+                new Claim[] { new Claim("id", selectedUser.ID.ToString()) },
+                DateTime.UtcNow.AddHours(10));
+            
+            return Ok(new {
+                token = tk.StringToken,
+                expires = tk.Expires
+            });
         }
 
         [AllowAnonymous]
@@ -77,50 +73,43 @@ namespace GWebAPI.Controllers
         public virtual async Task<IActionResult> Register( [FromBody] RegisterModel register)
         {
             ValidationModel requestValidation = register.Validate();
-            if (requestValidation.IsValid)
-            {
-                var userWithSameUsernameOrEmail = await _context.Users
-                    .AsNoTracking()
-                    .SingleOrDefaultAsync(u => u.Username.Equals(register.Username) || u.Email.Equals(register.Email));
-
-                if (userWithSameUsernameOrEmail != null) {
-                    if (userWithSameUsernameOrEmail.Username.Equals(register.Username))
-                        return BadRequest(ErrorBuilder.Create(ErrorCode.UsernameAlreadyTaken));
-                    else if (userWithSameUsernameOrEmail.Email.Equals(register.Email))
-                        return BadRequest(ErrorBuilder.Create(ErrorCode.EmailAlreadyUsed));
-                }
-
-                PasswordHash ph = _passwordService.Generate(register.Password);
-
-                UserModel newUser = new UserModel()
-                {
-                    Username = register.Username,
-                    Email = register.Email,
-                    Password = ph.Password,
-                    Salt = ph.Salt
-                };
-
-                _context.Users.Add(newUser);
-
-                try
-                { 
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception)
-                {
-                    return BadRequest(ErrorBuilder.Create(ErrorCode.RequestInternalError,"Contact your Administrator"));
-                }
-
-                return Ok (new {
-                    id = newUser.ID,
-                    username = newUser.Username,
-                    email = newUser.Email
-                });
-            }
-            else
-            {
+            if (!requestValidation.IsValid) {
                 return BadRequest(ErrorBuilder.Create(requestValidation));
             }
+            
+            var userWithSameUsernameOrEmail = await _context.Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.Username.Equals(register.Username) || u.Email.Equals(register.Email));
+
+            if (userWithSameUsernameOrEmail != null) {
+                if (userWithSameUsernameOrEmail.Username.Equals(register.Username))
+                    return BadRequest(ErrorBuilder.Create(ErrorCode.UsernameAlreadyTaken));
+                else if (userWithSameUsernameOrEmail.Email.Equals(register.Email))
+                    return BadRequest(ErrorBuilder.Create(ErrorCode.EmailAlreadyUsed));
+            }
+
+            PasswordHash ph = _passwordService.Generate(register.Password);
+            UserModel newUser = new UserModel()
+            {
+                Username = register.Username,
+                Email = register.Email,
+                Password = ph.Password,
+                Salt = ph.Salt
+            };
+            _context.Users.Add(newUser);
+
+            try { 
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception) {
+                return BadRequest(ErrorBuilder.Create(ErrorCode.RequestInternalError,"Contact your Administrator"));
+            }
+
+            return Ok (new {
+                id = newUser.ID,
+                username = newUser.Username,
+                email = newUser.Email
+            });
         }
 
         [HttpGet("readtoken")]
